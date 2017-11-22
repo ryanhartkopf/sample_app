@@ -208,7 +208,7 @@ resource "aws_instance" "swarm-manager" {
   }
   connection {
     user = "ubuntu"
-    private_key = "${file("deployer")}"
+    private_key = "${file("/var/lib/jenkins/deployer")}"
   }
   provisioner "remote-exec" {
     inline = [
@@ -247,7 +247,7 @@ resource "aws_instance" "swarm-node" {
 
   connection {
     user = "ubuntu"
-    private_key = "${file("deployer")}"
+    private_key = "${file("/var/lib/jenkins/deployer")}"
   }
   provisioner "file" {
     source = "key.pem"
