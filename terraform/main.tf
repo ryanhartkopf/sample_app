@@ -8,10 +8,19 @@ provider "aws" {
   region = "${var.region}"
 }
 
+terraform {
+  backend "s3" {
+    bucket = "terraform-ryanhartkopf"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+    
+
 # Create deploy public key for EC2 instances
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDR7MkSkwOPdhKGEPZ3J9Lmph+PyoB9eG/ZpX+yj/KXKQLtmeXwRkQ//mgFjbYyl2u3WcztT2gY8Lxb3zEKi90lr0WFvuWQvx6r+i8v6mLwO3sxem+3srmGdYGJUvbD21pd/Mo2O6OB5+FgJy3VeqybJYYqFOOOLsKNrbOU9UyugWLpyqaB5YGndq67SpqMCLeqwy69Wvmu6gOvjPcnGOWjVxZe+3bff7ZfJnzu04qcKNFfBONxkCm4ss8euMTEY3wOPZqkx0LYjs67se/VPD6RFrq10tzPVBQqTDAfrsQc3TSimhJgZaNb7/cbNuolFSRHVTTwwbvFd0nKhwGcLLAv"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDbGy2Uwh8PwxVI/gQIieENxI9LXA4KvvCvwGI6//eIXLaDFAJODUbvelV3jumOsI/HhoXXQwIiv5qsaLmYVB3n3nVATy6ekPt5pKQigu+7fttVPE3BWCe84AiWGNd9CuG598yLlzv/IUSK7oYhHUaOo6YBiMQhQOdchWwd2xrWWUYTdnfUB7AfmuPeTf0G3ZA07pZuTmtjYrIPMTiwWg5sePJqnzc+onPHDoD5lhNIdNqfrUXzizuLZ4G4UFgiqDk1CejyOof3tj8NEdLgP9ANil8y17NKpTO1xBn8G2qSMMlna0RCEOpv7lAjLALYPkL0b2L1Y3V2oTxzaPUyfk9"
 }
 
 ##################
@@ -79,6 +88,20 @@ resource "aws_subnet" "mongoB" {
 ##  Security Groups  ##
 #######################
 
+# Create security group for all swarm members
+resource "aws_security_group" "swarm" {
+  name = "swarm"
+  description = "Firewall rules for Docker Swarm members"
+  vpc_id = "${aws_vpc.main.id}"
+}
+
+# Create security group for swarm manager
+resource "aws_security_group" "swarm-manager" {
+  name = "swarm-manager"
+  description = "Firewall rules for Docker Swarm manager"
+  vpc_id = "${aws_vpc.main.id}"
+}
+
 # Create security group for swarm nodes
 resource "aws_security_group" "swarm-nodes" {
   name = "swarm-nodes"
@@ -115,16 +138,105 @@ resource "aws_security_group_rule" "swarm-elb-allow-80-in" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
+# Allow traffic from swarm nodes to swarm manager
+resource "aws_security_group_rule" "swarm-manager-allow-2376-in" {
+  security_group_id = "${aws_security_group.swarm-manager.id}"
+
+  type = "ingress"
+  from_port = 2377
+  to_port = 2377
+  protocol = "tcp"
+  source_security_group_id = "${aws_security_group.swarm-nodes.id}"
+}
+
+# Allow Docker traffic between swarm nodes
+resource "aws_security_group_rule" "swarm-nodes-allow-7946-in-tcp" {
+  security_group_id = "${aws_security_group.swarm-nodes.id}"
+
+  type = "ingress"
+  from_port = 7946
+  to_port = 7946
+  protocol = "tcp"
+  source_security_group_id = "${aws_security_group.swarm-nodes.id}"
+}
+resource "aws_security_group_rule" "swarm-nodes-allow-7946-in-udp" {
+  security_group_id = "${aws_security_group.swarm-nodes.id}"
+
+  type = "ingress"
+  from_port = 7946
+  to_port = 7946
+  protocol = "udp"
+  source_security_group_id = "${aws_security_group.swarm-nodes.id}"
+}
+
+# Allow overlay network traffic between all swarm members
+resource "aws_security_group_rule" "swarm-allow-4789-in-udp" {
+  security_group_id = "${aws_security_group.swarm.id}"
+
+  type = "ingress"
+  from_port = 4789
+  to_port = 4789
+  protocol = "udp"
+  source_security_group_id = "${aws_security_group.swarm.id}"
+}
+
+# Allow inbound SSH to swarm members from home base
+resource "aws_security_group_rule" "swarm-allow-22-in" {
+  security_group_id = "${aws_security_group.swarm.id}"
+
+  type = "ingress"
+  from_port = 22
+  to_port = 22
+  protocol = "tcp"
+  cidr_blocks = ["${var.jenkins_cidr}"]
+}
+  
+
 #####################
 ##  EC2 Instances  ##
 #####################
+
+resource "aws_instance" "swarm-manager" {
+  instance_type = "t2.micro"
+  ami           = "${lookup(var.aws_amis, var.region)}"
+  key_name      = "${aws_key_pair.deployer.key_name}"
+  subnet_id     = "${element(list("${aws_subnet.swarmA.id}", "${aws_subnet.swarmB.id}"), count.index)}"
+  vpc_security_group_ids = ["${aws_security_group.swarm-manager.id}", "${aws_security_group.swarm.id}"]
+  root_block_device = {
+    volume_type = "gp2"
+    volume_size = 8
+  }
+  connection {
+    user = "ubuntu"
+    private_key = "${file("deployer")}"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install apt-transport-https ca-certificates",
+      "sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D",
+      "sudo sh -c 'echo \"deb https://apt.dockerproject.org/repo ubuntu-xenial main\" > /etc/apt/sources.list.d/docker.list'",
+      "sudo apt-get update",
+      "sudo apt-get install -y docker-engine",
+      "sudo docker swarm init",
+      "sudo docker swarm join-token --quiet worker > /home/ubuntu/token"
+    ]
+  }
+  provisioner "file" {
+    source = "proj"
+    destination = "/home/ubuntu/"
+  }
+  tags = { 
+    Name = "swarm-manager"
+  }
+}
 
 resource "aws_instance" "swarm-node" {
   instance_type = "t2.micro"
   ami           = "${lookup(var.aws_amis, var.region)}"
   key_name      = "${aws_key_pair.deployer.key_name}"
   subnet_id     = "${element(list("${aws_subnet.swarmA.id}", "${aws_subnet.swarmB.id}"), count.index)}"
-  vpc_security_group_ids = ["${aws_security_group.swarm-nodes.id}"]
+  vpc_security_group_ids = ["${aws_security_group.swarm-nodes.id}", "${aws_security_group.swarm.id}"]
   root_block_device = {
     volume_type = "gp2"
     volume_size = 8
@@ -132,6 +244,31 @@ resource "aws_instance" "swarm-node" {
 
   # Create 4 instance
   count = 4
+
+  connection {
+    user = "ubuntu"
+    private_key = "${file("deployer")}"
+  }
+  provisioner "file" {
+    source = "key.pem"
+    destination = "/home/ubuntu/key.pem"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install apt-transport-https ca-certificates",
+      "sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D",
+      "sudo sh -c 'echo \"deb https://apt.dockerproject.org/repo ubuntu-xenial main\" > /etc/apt/sources.list.d/docker.list'",
+      "sudo apt-get update",
+      "sudo apt-get install -y docker-engine",
+      "sudo chmod 400 /home/ubuntu/test.pem",
+      "sudo scp -o StrictHostKeyChecking=no -o NoHostAuthenticationForLocalhost=yes -o UserKnownHostsFile=/dev/null -i test.pem ubuntu@${aws_instance.swarm-manager.private_ip}:/home/ubuntu/token .",
+      "sudo docker swarm join --token $(cat /home/ubuntu/token) ${aws_instance.swarm-manager.private_ip}:2377"
+    ]
+  }
+  tags = { 
+    Name = "swarm-node-${count.index}"
+  }
 }
 
 ######################
