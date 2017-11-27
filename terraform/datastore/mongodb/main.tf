@@ -88,6 +88,7 @@ resource "aws_ebs_volume" "mongoA" {
   availability_zone = "${element("${aws_subnet.data.*.availability_zone}", count.index)}"
   encrypted         = true
   type              = "gp2"
+  size              = 8
 
   tags {
     Name = "mongoA"
@@ -104,7 +105,7 @@ resource "aws_ebs_volume" "mongoA" {
 resource "aws_launch_configuration" "data" {
   image_id             = "${var.source_ami}"
   instance_type        = "${var.instance_type}"
-  iam_instance_profile = "AttachEBSVolumes"
+  iam_instance_profile = "AttachEBSVolume"
   key_name             = "deployer"
   user_data            = "${file("user_data.sh")}"
 
