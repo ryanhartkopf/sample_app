@@ -1,9 +1,9 @@
 #!/bin/bash
 
 echo "packer: updating aptitude"
-sudo apt-key update
-sudo apt-get update
-sudo unattended-upgrades
+#sudo apt-key update
+#sudo apt-get update
+#sudo unattended-upgrades
 
 echo "packer: creating swap space"
 sudo mkdir -p /media/fasthdd
