@@ -44,7 +44,7 @@ resource "aws_security_group" "jenkins" {
 
 # Allow access to Jenkins from home office
 resource "aws_security_group_rule" "app-elb-allow-8080-in" {
-  security_group_id = "${aws_security_group.app-elb.id}"
+  security_group_id = "${aws_security_group.jenkins.id}"
 
   type        = "ingress"
   from_port   = 8080
