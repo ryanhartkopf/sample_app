@@ -2,9 +2,7 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "source_ami" {
-  default  = "ami-da05a4a0"
-}
+variable "source_ami" {}
 
 variable "instance_type" {
   default = "t2.nano"
