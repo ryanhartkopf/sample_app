@@ -3,8 +3,8 @@
 echo "packer: updating aptitude"
 sudo apt-key update
 sudo apt-get update
+sudo apt-get -y dist-upgrade
 sudo apt-get remove apt-listchanges -y
-sudo apt-get install git make g++ graphicsmagick curl python-software-properties software-properties-common -y
 
 echo "packer: creating swap space"
 sudo mkdir -p /media/fasthdd
@@ -24,9 +24,3 @@ echo "packer: nodejs"
 nvm install $NODE_VERSION
 nvm alias default $NODE_VERSION
 npm update -g npm
-
-echo "packer: precaching server dependencies"
-mkdir -p $HOME/app/precache
-cp -r /tmp/mailtube $HOME/app/mailtube
-cp $HOME/app/mailtube/package.json $HOME/app/precache
-npm install --prefix $HOME/app/precache
