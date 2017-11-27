@@ -6,11 +6,11 @@ echo "packer: updating aptitude"
 #sudo unattended-upgrades
 
 echo "packer: creating swap space"
-sudo mkdir -p /media/fasthdd
-sudo dd if=/dev/zero of=/media/fasthdd/swapfile.img bs=1024 count=3M
-sudo mkswap /media/fasthdd/swapfile.img
-sudo chmod 0600 /media/fasthdd/swapfile.img
-echo "/media/fasthdd/swapfile.img swap swap sw 0 0" | sudo tee -a /etc/fstab
+#sudo mkdir -p /media/fasthdd
+#sudo dd if=/dev/zero of=/media/fasthdd/swapfile.img bs=1024 count=3M
+#sudo mkswap /media/fasthdd/swapfile.img
+#sudo chmod 0600 /media/fasthdd/swapfile.img
+#echo "/media/fasthdd/swapfile.img swap swap sw 0 0" | sudo tee -a /etc/fstab
 
 echo "packer: nvm"
 mkdir $HOME
