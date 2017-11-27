@@ -13,7 +13,9 @@ terraform {
 # Create VPC for application
 
 resource "aws_vpc" "main" {
-  cidr_block = "${var.aws_vpc_cidr_block}"
+  cidr_block           = "${var.aws_vpc_cidr_block}"
+  enable_dns_hostnames = true
+
   tags {
     Name = "${var.project_name}"
   }
@@ -23,6 +25,7 @@ resource "aws_vpc" "main" {
 
 resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.main.id}"
+
   tags {
     Name = "${aws_vpc.main.tags.Name}"
   }
