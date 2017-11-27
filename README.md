@@ -7,7 +7,7 @@ The backend and routing are contained in the [server.js](server.js) file, and th
 ## Infrastructure - app layer
 The app layer infrastructure is immutable. To quote Florian Motlik from CodeShip, "Immutable infrastructure is comprised of immutable components that are replaced for every deployment, rather than being updated in-place." [(Source)](https://blog.codeship.com/immutable-infrastructure/). This allows us to avoid configuration drift, memory leaks, unpatched instances, and the dreaded reboot of an instance with 439 days of uptime at 2 in the morning. The app layer will be deployed using Terraform with a single Elastic Load Balancer and an Auto-Scaling Group of EC2 instances. The instance AMIs are built using Packer.
 
-## Deployment
+## Build
 To build the infrastructure, clone the GitHub repo, give Terraform some credentials [(see Terraform docs)](https://www.terraform.io/docs/providers/aws/), download and install [Terragrunt](https://github.com/gruntwork-io/terragrunt/releases) for remote state management, then run:
 
 ```
@@ -28,6 +28,7 @@ BASE_AMI=$(tail -2 < /tmp/base.log | grep ami | cut -d ' ' -f 2)
 echo $BASE_AMI >> /tmp/base_ami
 ```
 
+## Deploy
 After the base image has been created, the deploy image can be built very quickly. The steps are similar to the base image:
 
 ```
@@ -70,7 +71,7 @@ stage('Rolling App Deployment') {
 
 To update the app code, only the last two stages need to be executed, which means our new code takes under 4 minutes to hit production. Not bad!
 
-For additional performance gains, more AMI layers can be added with Packer to cache other operations that don't need to be performed every day, such as updating app dependency versions.
+For additional performance gains, more AMI layers can be added with Packer to cache other operations that don't need to be performed every day, such as updating versions for app requirements.
 
 ## Todo
 * Store and manage AMI image IDs in a way that allows changes to be rolled back easily
