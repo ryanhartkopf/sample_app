@@ -94,7 +94,7 @@ resource "aws_ebs_volume" "mongoA" {
   }
 
   # This resource is persistent and should never be deleted by Terraform
-  lifecycle_management {
+  lifecycle {
     prevent_destroy = true
   }
 }
