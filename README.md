@@ -68,6 +68,10 @@ stage('Rolling App Deployment') {
 
 ![Jenkins Pipeline image](Jenkins_Pipeline.png)
 
+To update the app code, only the last two stages need to be executed, which means our new code takes under 4 minutes to hit production. Not bad!
+
+For additional performance gains, more AMI layers can be added with Packer to cache other operations that don't need to be performed every day, such as updating app dependency versions.
+
 ## Todo
 * Store and manage AMI image IDs in a way that allows changes to be rolled back easily
 * Testing of AMI images before deployment
