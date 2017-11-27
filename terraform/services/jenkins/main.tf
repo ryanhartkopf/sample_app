@@ -30,7 +30,7 @@ resource "aws_subnet" "admin" {
   count             = "${length(var.aws_subnet_cidr_blocks)}"
 
   tags {
-    Name = "${data.terraform_remote_state.vpc.project_name}-app-${count.index}"
+    Name = "${data.terraform_remote_state.vpc.project_name}-admin-${count.index}"
   }
 }
 
@@ -38,8 +38,8 @@ resource "aws_subnet" "admin" {
 
 resource "aws_security_group" "jenkins" {
   vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
-  name        = "${data.terraform_remote_state.vpc.project_name}-app-elb"
-  description = "Firewall rules for ${data.terraform_remote_state.vpc.project_name} Elastic Load Balancer"
+  name        = "jenkins"
+  description = "Firewall rules for Jenkins instance"
 }
 
 resource "aws_security_group_rule" "jenkins-allow-22-in" {
