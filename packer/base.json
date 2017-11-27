@@ -10,7 +10,7 @@
     "NODE_VERSION": "8.9.1"
   },
   "builders": [{
-    "type": "amazon-ebs",
+    "type": "amazon-chroot",
     "region": "{{ user `REGION`}}",
     "vpc_id": "{{user `VPC_ID`}}",
     "subnet_id": "{{user `SUBNET_ID`}}",

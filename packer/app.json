@@ -8,7 +8,7 @@
     "SUBNET_ID": null
   },
   "builders": [{
-    "type": "amazon-ebs",
+    "type": "amazon-chroot",
     "region": "{{ user `REGION`}}",
     "vpc_id": "{{user `VPC_ID`}}",
     "subnet_id": "{{user `SUBNET_ID`}}",
