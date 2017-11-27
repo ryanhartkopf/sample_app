@@ -95,11 +95,11 @@ resource "aws_eip" "jenkins" {
 # Spin up Jenkins EC2 instance
 
 resource "aws_instance" "jenkins" {
-  subnet_id       = "${aws_subnet.admin.id}"
-  ami             = "${var.source_ami}"
-  instance_type   = "${var.instance_type}"
-  security_groups = ["${aws_security_group.jenkins.id}"]
-  key_name        = "deployer"
+  subnet_id              = "${aws_subnet.admin.id}"
+  ami                    = "${var.source_ami}"
+  instance_type          = "${var.instance_type}"
+  vpc_security_group_ids = ["${aws_security_group.jenkins.id}"]
+  key_name               = "deployer"
 
   tags {
     Name = "jenkins"
