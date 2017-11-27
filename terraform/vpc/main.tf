@@ -4,10 +4,14 @@ provider "aws" {
   region = "${var.region}"
 }
 
-# The configuration for remote state will be filled in by Terragrunt
-
 terraform {
-  backend "s3" {}
+  backend "s3" {
+    bucket         = "terraform-lkafdhva"
+    key            = "vpc/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "terraform-svkbdyhf"
+  }
 }
 
 # Create VPC for application
