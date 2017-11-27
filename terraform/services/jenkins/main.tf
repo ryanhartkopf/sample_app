@@ -1,15 +1,3 @@
-# Configure AWS provider
-
-provider "aws" {
-  region = "${var.region}"
-}
-
-# The configuration for remote state will be filled in by Terragrunt
-
-terraform {
-  backend "s3" {}
-}
-
 # Pull remote state data from the VPC
 
 data "terraform_remote_state" "vpc" {
@@ -19,6 +7,18 @@ data "terraform_remote_state" "vpc" {
     key = "vpc/terraform.tfstate"    
     region = "us-east-1"
   }
+}
+
+# The configuration for remote state will be filled in by Terragrunt
+
+terraform {
+  backend "s3" {}
+}
+
+# Configure AWS provider
+
+provider "aws" {
+  region = "${data.terraform_remote_state.vpc.region}"
 }
 
 # Define subnets for admin servers
