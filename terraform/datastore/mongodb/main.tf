@@ -108,6 +108,7 @@ resource "aws_launch_configuration" "data" {
   iam_instance_profile = "AttachEBSVolume"
   key_name             = "deployer"
   user_data            = "${file("user_data.sh")}"
+  security_groups      = ["${aws_security_group.data.id}"]
 
   lifecycle {
     create_before_destroy = true

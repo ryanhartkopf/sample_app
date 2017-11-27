@@ -98,8 +98,9 @@ resource "aws_elb" "app" {
 # Configure Auto-Scaling Group, launch it, and attach to ELB
 
 resource "aws_launch_configuration" "app" {
-  image_id = "${var.source_ami}"
-  instance_type = "${var.instance_type}"
+  image_id        = "${var.source_ami}"
+  instance_type   = "${var.instance_type}"
+  security_groups = ["${aws_security_group.data.id}"]
 
   lifecycle {
     create_before_destroy = true
