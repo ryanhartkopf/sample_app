@@ -88,7 +88,7 @@ resource "aws_elb" "app" {
 
 resource "aws_launch_configuration" "app" {
   name     = "${var.project_name}-app-asg-config"
-  image_id = "${lookup(var.aws_amis, var.region)}"
+  image_id = "${var.source_ami}"
   instance_type = "${lookup(var.instance_types, "app")}"
 }
 

@@ -6,10 +6,6 @@ output "region" {
   value = "${var.region}"
 }
 
-output "aws_amis" {
-  value = "${var.aws_amis}"
-}
-
 output "instance_types" {
   value = "${var.instance_types}"
 }
