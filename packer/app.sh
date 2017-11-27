@@ -26,3 +26,7 @@ npm install --prefix $HOME/server
 
 echo "packer: booting appserver daemon..."
 sudo service $NAME start
+
+echo "packer: testing daemon"
+curl localhost:8080
+ps aux --forest
