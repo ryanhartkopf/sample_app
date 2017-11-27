@@ -1,5 +1,5 @@
 # A simple example of immutable infrastructure
-A Node.js application and MongoDB database deployed using Packer and Terraform on AWS.
+A Node.js application and MongoDB database deployed using Packer and Terraform on AWS. See this [CloudCraft diagram](https://cloudcraft.co/view/ef83c3de-abfe-42eb-acee-d96cad91dc55?key=vtzk8z9G_7mL8xxDLiciQA) for a visual view of the app.
 
 ## About the app
 The backend and routing are contained in the [server.js](server.js) file, and the AngularJS front end is contained in the [public/](public/) directory. This sample app was pulled from the [Node Todo](https://github.com/scotch-io/node-todo) project from Scotch.io. Our single table "Todo" will be stored in a MongoDB database. The service is divided into 2 layers, app and data.
