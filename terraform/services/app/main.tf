@@ -101,6 +101,10 @@ resource "aws_launch_configuration" "app" {
   name     = "${data.terraform_remote_state.vpc.project_name}-app-asg-config"
   image_id = "${var.source_ami}"
   instance_type = "${var.instance_type}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_autoscaling_group" "app" {
@@ -113,6 +117,10 @@ resource "aws_autoscaling_group" "app" {
   desired_capacity          = 4
   force_delete              = true
   launch_configuration      = "${aws_launch_configuration.app.name}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   tag {
     key                 = "Name"
