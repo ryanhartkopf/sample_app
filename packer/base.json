@@ -12,11 +12,11 @@
   "builders": [{
     "type": "amazon-chroot",
     "region": "{{ user `REGION`}}",
-    "vpc_id": "{{user `VPC_ID`}}",
-    "subnet_id": "{{user `SUBNET_ID`}}",
-    "associate_public_ip_address": true,
-    "instance_type": "{{user `INSTANCE_TYPE`}}",
-    "ssh_username": "{{user `INSTANCE_USER`}}",
+#    "vpc_id": "{{user `VPC_ID`}}",
+#    "subnet_id": "{{user `SUBNET_ID`}}",
+#    "associate_public_ip_address": true,
+#    "instance_type": "{{user `INSTANCE_TYPE`}}",
+#    "ssh_username": "{{user `INSTANCE_USER`}}",
     "ami_name": "base {{timestamp}}",
     "source_ami": "{{user `SOURCE_AMI`}}"
   }],
