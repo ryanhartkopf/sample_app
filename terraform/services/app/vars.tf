@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "source_ami" {
-  default "ami-da05a4a0"
+  default  = "ami-da05a4a0"
 }
 
 variable "instance_type" {
