@@ -7,7 +7,7 @@ variable "source_ami" {
 }
 
 variable "instance_type" {
-  default = "t2.nano"
+  default = "t2.micro"
 }
 
 variable "aws_subnet_cidr_blocks" {

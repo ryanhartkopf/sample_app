@@ -100,6 +100,7 @@ resource "aws_instance" "jenkins" {
   instance_type          = "${var.instance_type}"
   vpc_security_group_ids = ["${aws_security_group.jenkins.id}"]
   key_name               = "deployer"
+  iam_instance_profile   = "TerraformPowerUser"
 
   tags {
     Name = "jenkins"
