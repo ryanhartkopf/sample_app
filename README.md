@@ -73,6 +73,19 @@ To update the app code, only the last two stages need to be executed, which mean
 
 For additional performance gains, more AMI layers can be added with Packer to cache other operations that don't need to be performed every day, such as updating versions for app requirements.
 
+## Troubleshooting
+You may run into this error using terragrunt:
+
+```
+1 error(s) occurred:
+
+* provider.aws: no suitable version installed
+  version requirements: "(any version)"
+  versions installed: none
+```
+
+If this occurs, you can fix it by wiping out the Jenkins job workspace and running the job again, or by deleting the .terraform directory if you are running terragrunt locally.
+
 ## Todo
 * Store and manage AMI image IDs in a way that allows changes to be rolled back easily
 * Testing of AMI images before deployment
