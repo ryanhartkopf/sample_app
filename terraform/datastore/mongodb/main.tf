@@ -132,5 +132,3 @@ resource "aws_autoscaling_attachment" "data" {
   autoscaling_group_name = "${aws_autoscaling_group.data.id}"
   elb                    = "${aws_elb.data.id}"
 }
-
-resource 
