@@ -1,5 +1,10 @@
 #!/bin/bash
 
+apt-get update
+unattended-upgrades
+apt-get install python-pip
+pip install boto3 argparse
+
 cat << EOF > attach_volume.py
 #!/usr/bin/env python
 """Retrieve available EBS volume in AZ."""
