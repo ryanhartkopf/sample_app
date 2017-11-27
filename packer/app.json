@@ -1,20 +1,10 @@
 {
   "variables": {
-    "REGION": "us-east-1",
     "SOURCE_AMI": null,
-    "INSTANCE_TYPE": "t2.micro",
-    "INSTANCE_USER": "ubuntu",
-    "VPC_ID": null,
-    "SUBNET_ID": null
+    "INSTANCE_USER": "ubuntu"
   },
   "builders": [{
     "type": "amazon-chroot",
-    "region": "{{ user `REGION`}}",
-    "vpc_id": "{{user `VPC_ID`}}",
-    "subnet_id": "{{user `SUBNET_ID`}}",
-    "associate_public_ip_address": true,
-    "instance_type": "{{user `INSTANCE_TYPE`}}",
-    "ssh_username": "{{user `INSTANCE_USER`}}",
     "ami_name": "sample-app {{timestamp}}",
     "source_ami": "{{user `SOURCE_AMI`}}"
   }],
