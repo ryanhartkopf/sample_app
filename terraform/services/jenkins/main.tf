@@ -10,25 +10,36 @@ terraform {
   backend "s3" {}
 }
 
+# Pull remote state data from the VPC
+
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+  config {
+    bucket = "terraform-ryanhartkopf"
+    key = "vpc/terraform.tfstate"    
+    region = "us-east-1"
+  }
+}
+
 # Define subnets for admin servers
 
 resource "aws_subnet" "admin" {
-  vpc_id            = "${var.vpc_id}"
+  vpc_id            = "${data.terraform_remote_state.vpc.vpc_id}"
   cidr_block        = "${var.aws_subnet_cidr_blocks[count.index]}"
   availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
   count             = "${length(var.aws_subnet_cidr_blocks)}"
 
   tags {
-    Name = "${var.project_name}-app-${count.index}"
+    Name = "${data.terraform_remote_state.vpc.project_name}-app-${count.index}"
   }
 }
 
 # Create Jenkins security group
 
 resource "aws_security_group" "jenkins" {
-  vpc_id      = "${var.vpc_id}"
-  name        = "${var.project_name}-app-elb"
-  description = "Firewall rules for ${var.project_name} Elastic Load Balancer"
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  name        = "${data.terraform_remote_state.vpc.project_name}-app-elb"
+  description = "Firewall rules for ${data.terraform_remote_state.vpc.project_name} Elastic Load Balancer"
 }
 
 # Allow access to Jenkins from home office

@@ -1,7 +1,7 @@
 # Configure AWS provider
 
 provider "aws" {
-  region = "${var.region}"
+  region = "${data.terraform_remote_state.vpc.region}"
 }
 
 # The configuration for remote state will be filled in by Terragrunt
@@ -10,32 +10,43 @@ terraform {
   backend "s3" {}
 }
 
+# Pull remote state data from the VPC
+
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+  config {
+    bucket = "terraform-ryanhartkopf"
+    key = "vpc/terraform.tfstate"    
+    region = "us-east-1"
+  }
+}
+
 # Define subnets for app nodes
 
 resource "aws_subnet" "app" {
-  vpc_id = "${var.vpc_id}"
-  cidr_block = "${var.aws_subnet_cidr_blocks_app[count.index]}"
+  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+  cidr_block = "${var.aws_subnet_cidr_blocks[count.index]}"
   availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
-  count = "${length(var.aws_subnet_cidr_blocks_app)}"
+  count = "${length(var.aws_subnet_cidr_blocks)}"
 
   tags {
-    Name = "${var.project_name}-app-${count.index}"
+    Name = "${data.terraform_remote_state.vpc.project_name}-app-${count.index}"
   }
 }
 
 # Create security group for ELB
 
 resource "aws_security_group" "app-elb" {
-  vpc_id = "${var.vpc_id}"
-  name = "${var.project_name}-app-elb"
-  description = "Firewall rules for ${var.project_name} Elastic Load Balancer"
+  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+  name = "${data.terraform_remote_state.vpc.project_name}-app-elb"
+  description = "Firewall rules for ${data.terraform_remote_state.vpc.project_name} Elastic Load Balancer"
 }
 
 # Create security group for app instances
 resource "aws_security_group" "app" {
-  name = "${var.project_name}-app"
-  description = "Firewall rules for ${var.project_name} app instances"
-  vpc_id = "${var.vpc_id}"
+  name = "${data.terraform_remote_state.vpc.project_name}-app"
+  description = "Firewall rules for ${data.terraform_remote_state.vpc.project_name} app instances"
+  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
 }
 
 # Allow traffic to ELB from public internet
@@ -63,7 +74,7 @@ resource "aws_security_group_rule" "app-allow-8080-in" {
 # Create ELB
 
 resource "aws_elb" "app" {
-  name    = "${var.project_name}-app-elb"
+  name    = "${data.terraform_remote_state.vpc.project_name}-app-elb"
   subnets = ["${aws_subnet.app.*.id}"]
 
   listener {
@@ -87,14 +98,14 @@ resource "aws_elb" "app" {
 # Configure Auto-Scaling Group, launch it, and attach to ELB
 
 resource "aws_launch_configuration" "app" {
-  name     = "${var.project_name}-app-asg-config"
+  name     = "${data.terraform_remote_state.vpc.project_name}-app-asg-config"
   image_id = "${var.source_ami}"
-  instance_type = "${lookup(var.instance_types, "app")}"
+  instance_type = "${var.instance_type}"
 }
 
 resource "aws_autoscaling_group" "app" {
   vpc_zone_identifier       = ["${aws_subnet.app.*.id}"]
-  name                      = "${var.project_name}-app-asg"
+  name                      = "${data.terraform_remote_state.vpc.project_name}-app-asg"
   max_size                  = 8
   min_size                  = 2
   health_check_grace_period = 300
@@ -105,7 +116,7 @@ resource "aws_autoscaling_group" "app" {
 
   tag {
     key                 = "Name"
-    value               = "${var.project_name}-app"
+    value               = "${data.terraform_remote_state.vpc.project_name}-app"
     propagate_at_launch = true
   }
 }
