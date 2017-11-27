@@ -3,8 +3,7 @@
 echo "packer: updating aptitude"
 sudo apt-key update
 sudo apt-get update
-sudo apt-get -y dist-upgrade
-sudo apt-get remove apt-listchanges -y
+sudo unattended-upgrades
 
 echo "packer: creating swap space"
 sudo mkdir -p /media/fasthdd
