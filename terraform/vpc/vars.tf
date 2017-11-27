@@ -1,9 +1,3 @@
-terragrunt = {
-  include {
-    path = "${find_in_parent_folders()}"
-  }
-}
-
 variable "project_name" {
   default = "sample"
 }
