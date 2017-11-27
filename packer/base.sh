@@ -23,3 +23,5 @@ echo "packer: nodejs"
 nvm install $NODE_VERSION
 nvm alias default $NODE_VERSION
 npm update -g npm
+
+mv /tmp/mailtube/init.d/appserver.conf $HOME/appserver.conf
