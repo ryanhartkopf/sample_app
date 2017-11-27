@@ -86,6 +86,17 @@ resource "aws_security_group_rule" "jenkins-allow-8080-in-gh2" {
   description = "Allow access for GitHub webhooks"
 }
 
+resource "aws_security_group_rule" "jenkins-allow-all-out" {
+  security_group_id = "${aws_security_group.jenkins.id}"
+
+  type        = "egress"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
+  description = "Allow all outbound access"
+}
+
 # Create Elastic IP for Jenkins instance
 
 resource "aws_eip" "jenkins" {
