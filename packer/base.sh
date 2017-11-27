@@ -13,6 +13,7 @@ sudo chmod 0600 /media/fasthdd/swapfile.img
 echo "/media/fasthdd/swapfile.img swap swap sw 0 0" | sudo tee -a /etc/fstab
 
 echo "packer: nvm"
+mkdir $HOME
 curl https://raw.githubusercontent.com/creationix/nvm/$NVM_VERSION/install.sh | bash
 . $HOME/.nvm/nvm.sh
 
