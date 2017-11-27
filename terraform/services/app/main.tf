@@ -107,13 +107,16 @@ resource "aws_launch_configuration" "app" {
 }
 
 resource "aws_autoscaling_group" "app" {
+  # interpolate the LC into the ASG name so it always forces an update
+  name = "asg-app-${aws_launch_configuration.app.name}"
+
   vpc_zone_identifier       = ["${aws_subnet.app.*.id}"]
   max_size                  = 8
   min_size                  = 2
+  desired_capacity          = 2
+  wait_for_elb_capacity     = 2
   health_check_grace_period = 300
   health_check_type         = "ELB"
-  desired_capacity          = 4
-  force_delete              = true
   launch_configuration      = "${aws_launch_configuration.app.name}"
 
   lifecycle {
