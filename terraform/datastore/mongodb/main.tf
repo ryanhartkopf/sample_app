@@ -12,7 +12,7 @@ data "terraform_remote_state" "app" {
   backend = "s3"
   config {
     bucket = "terraform-state-ryanhartkopf"
-    key = "app/terraform.tfstate"
+    key = "services/app/terraform.tfstate"
     region = "us-east-1"
   }
 }
