@@ -6,11 +6,11 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "terraform-lkafdhva"
+    bucket         = "terraform-ryanhartkopf"
     key            = "vpc/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
-    dynamodb_table = "terraform-svkbdyhf"
+    dynamodb_table = "terraform-ryanhartkopf"
   }
 }
 
