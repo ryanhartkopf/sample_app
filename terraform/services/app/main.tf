@@ -3,7 +3,7 @@
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config {
-    bucket = "terraform-ryanhartkopf"
+    bucket = "terraform-state-ryanhartkopf"
     key = "vpc/terraform.tfstate"    
     region = "us-east-1"
   }
