@@ -11,8 +11,6 @@ sed -i "s#{USER}#$INSTANCE_USER#g" $HOME/appserver.conf
 sed -i "s#{COMMAND}#$HOME/start#g" $HOME/appserver.conf
 sudo mv $HOME/appserver.conf /etc/init.d/$NAME
 sudo chmod +x /etc/init.d/$NAME
-sudo touch /var/log/$NAME.log
-sudo chown $INSTANCE_USER /var/log/$NAME.log
 sudo update-rc.d $NAME defaults
 
 echo "packer: sourcing nvm"
@@ -23,10 +21,3 @@ mv /tmp/app $HOME/server
 
 echo "packer: installing server dependencies"
 npm install --prefix $HOME/server
-
-echo "packer: booting appserver daemon..."
-sudo service $NAME start
-
-echo "packer: testing daemon"
-curl localhost:8080
-ps aux --forest
