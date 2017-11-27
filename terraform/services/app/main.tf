@@ -98,7 +98,6 @@ resource "aws_elb" "app" {
 # Configure Auto-Scaling Group, launch it, and attach to ELB
 
 resource "aws_launch_configuration" "app" {
-  name     = "${data.terraform_remote_state.vpc.project_name}-app-asg-config"
   image_id = "${var.source_ami}"
   instance_type = "${var.instance_type}"
 
@@ -109,7 +108,6 @@ resource "aws_launch_configuration" "app" {
 
 resource "aws_autoscaling_group" "app" {
   vpc_zone_identifier       = ["${aws_subnet.app.*.id}"]
-  name                      = "${data.terraform_remote_state.vpc.project_name}-app-asg"
   max_size                  = 8
   min_size                  = 2
   health_check_grace_period = 300
