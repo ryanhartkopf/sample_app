@@ -53,6 +53,12 @@ resource "aws_security_group_rule" "app-elb-allow-8080-in" {
   cidr_blocks = ["75.128.253.63/32"]
 }
 
+# Create Elastic IP for Jenkins instance
+
+resource "aws_eip" "jenkins" {
+  vpc      = true
+}
+
 # Spin up Jenkins EC2 instance
 
 resource "aws_instance" "jenkins" {
@@ -67,9 +73,8 @@ resource "aws_instance" "jenkins" {
   }
 }
 
-# Create Elastic IP for Jenkins instance
-
-resource "aws_eip" "jenkins" {
-  instance = "${aws_instance.jenkins.id}"
-  vpc      = true
+# Associate Elastic IP with Jenkins instance
+resource "aws_eip_association" "jenkins" {
+  instance_id   = "${aws_instance.jenkins.id}"
+  allocation_id = "${aws_eip.jenkins.id}"
 }
