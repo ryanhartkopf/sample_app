@@ -1,4 +1,4 @@
-# Pull remote state data from the VPC
+# Pull remote statedata from the VPC
 
 data "terraform_remote_state" "vpc" {
   backend = "s3"
@@ -100,7 +100,7 @@ resource "aws_elb" "app" {
 resource "aws_launch_configuration" "app" {
   image_id        = "${var.source_ami}"
   instance_type   = "${var.instance_type}"
-  security_groups = ["${aws_security_group.data.id}"]
+  security_groups = ["${aws_security_group.app.id}"]
 
   lifecycle {
     create_before_destroy = true
@@ -133,5 +133,4 @@ resource "aws_autoscaling_group" "app" {
 
 resource "aws_autoscaling_attachment" "app" {
   autoscaling_group_name = "${aws_autoscaling_group.app.id}"
-  elb                    = "${aws_elb.app.id}"
-}
+  elb                    = "${aws_elb.app.id}"}
