@@ -11,7 +11,6 @@ sudo dd if=/dev/zero of=/media/fasthdd/swapfile.img bs=1024 count=3M
 sudo mkswap /media/fasthdd/swapfile.img
 sudo chmod 0600 /media/fasthdd/swapfile.img
 echo "/media/fasthdd/swapfile.img swap swap sw 0 0" | sudo tee -a /etc/fstab
-sudo swapon /media/fasthdd/swapfile.img
 
 echo "packer: nvm"
 curl https://raw.githubusercontent.com/creationix/nvm/$NVM_VERSION/install.sh | bash
