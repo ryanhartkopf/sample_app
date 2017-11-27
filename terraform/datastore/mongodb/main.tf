@@ -121,7 +121,6 @@ resource "aws_autoscaling_group" "data" {
   max_size                  = 1
   min_size                  = 1
   desired_capacity          = 1
-  wait_for_elb_capacity     = 1
   health_check_type         = "EC2"
   launch_configuration      = "${aws_launch_configuration.data.name}"
 
@@ -134,9 +133,4 @@ resource "aws_autoscaling_group" "data" {
     value               = "${data.terraform_remote_state.vpc.project_name}-data"
     propagate_at_launch = true
   }
-}
-
-resource "aws_autoscaling_attachment" "data" {
-  autoscaling_group_name = "${aws_autoscaling_group.data.id}"
-  elb                    = "${aws_elb.data.id}"
 }
