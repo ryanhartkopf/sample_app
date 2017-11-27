@@ -100,6 +100,14 @@ resource "aws_ebs_volume" "mongoA" {
   }
 }
 
+# Create persistent IP address so Packer can pull its IP from the remote state
+
+resource "aws_network_interface" "test" {
+  subnet_id       = "${element("${aws_subnet.data.*.id}", count.index)}"
+  private_ips     = ["${var.mongo_static_ips[count.index]}"]
+  security_groups = ["${aws_security_group.data.id}"]
+}
+
 # Configure Auto-Scaling Group and launch it
 
 resource "aws_launch_configuration" "data" {

@@ -1,7 +1,8 @@
 {
   "variables": {
     "SOURCE_AMI": null,
-    "INSTANCE_USER": "ubuntu"
+    "INSTANCE_USER": "ubuntu",
+    "DB_HOST": null
   },
   "builders": [{
     "type": "amazon-chroot",
@@ -16,7 +17,8 @@
     "type": "shell",
     "environment_vars": [
       "INSTANCE_USER={{user `INSTANCE_USER`}}",
-      "NAME=sample-app"
+      "NAME=sample-app",
+      "DB_HOST={{user `DB_HOST`}}"
     ],
     "script": "packer/app.sh"
   }]

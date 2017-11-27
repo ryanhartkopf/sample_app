@@ -10,12 +10,10 @@ var methodOverride = require('method-override');
 
 const PORT = 8080;
 const HOST = '0.0.0.0';
-
-// get env vars
-var mongoUrl = process.env.MONGO_URL;
+const DB_HOST = process.env.DB_HOST || "localhost";
 
 // configuration
-mongoose.connect('mongodb://localhost/todo');
+mongoose.connect('mongodb://' + DB_HOST + '/todo');
 
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));

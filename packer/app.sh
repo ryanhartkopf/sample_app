@@ -3,7 +3,7 @@
 echo "packer: installing appserver daemon..."
 echo "#!/bin/bash" > $HOME/start
 echo ". $HOME/.nvm/nvm.sh" >> $HOME/start
-echo "node $HOME/server/server.js" >> $HOME/start
+echo "DB_HOST=$DB_HOST node $HOME/server/server.js" >> $HOME/start
 chmod +x $HOME/start
 sed -i "s#{NAME}#$NAME#g" $HOME/appserver.conf
 sed -i "s#{DESCRIPTION}#Web application daemon service for $NAME#g" $HOME/appserver.conf
