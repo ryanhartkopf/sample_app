@@ -79,7 +79,7 @@ resource "aws_security_group_rule" "data-allow-27017-internal-out" {
 resource "aws_ebs_volume" "mongoA" {
   availability_zone = "${element("${aws_subnet.data.*.availability_zone}", count.index)}"
   encrypted         = true
-  type              = gp2
+  type              = "gp2"
 
   tags {
     Name = "mongoA"
