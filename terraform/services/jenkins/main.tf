@@ -34,7 +34,7 @@ resource "aws_subnet" "admin" {
   }
 }
 
-# Create Jenkins security group
+# Configure security groups
 
 resource "aws_security_group" "jenkins" {
   vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
@@ -42,15 +42,48 @@ resource "aws_security_group" "jenkins" {
   description = "Firewall rules for ${data.terraform_remote_state.vpc.project_name} Elastic Load Balancer"
 }
 
-# Allow access to Jenkins from home office
-resource "aws_security_group_rule" "app-elb-allow-8080-in" {
+resource "aws_security_group_rule" "jenkins-allow-22-in" {
+  security_group_id = "${aws_security_group.jenkins.id}"
+
+  type        = "ingress"
+  from_port   = 22
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = ["${var.office_ip}"]
+  description = "SSH access to Jenkins instance from office"
+}
+
+resource "aws_security_group_rule" "jenkins-allow-8080-in" {
   security_group_id = "${aws_security_group.jenkins.id}"
 
   type        = "ingress"
   from_port   = 8080
   to_port     = 8080
   protocol    = "tcp"
-  cidr_blocks = ["75.128.253.63/32"]
+  cidr_blocks = ["${var.office_ip}"]
+  description = "Jenkins web access from office"
+}
+
+resource "aws_security_group_rule" "jenkins-allow-8080-in-gh1" {
+  security_group_id = "${aws_security_group.jenkins.id}"
+
+  type        = "ingress"
+  from_port   = 8080
+  to_port     = 8080
+  protocol    = "tcp"
+  cidr_blocks = ["192.30.252.0/22"]
+  description = "Allow access for GitHub webhooks"
+}
+
+resource "aws_security_group_rule" "jenkins-allow-8080-in-gh2" {
+  security_group_id = "${aws_security_group.jenkins.id}"
+
+  type        = "ingress"
+  from_port   = 8080
+  to_port     = 8080
+  protocol    = "tcp"
+  cidr_blocks = ["185.199.108.0/22"]
+  description = "Allow access for GitHub webhooks"
 }
 
 # Create Elastic IP for Jenkins instance

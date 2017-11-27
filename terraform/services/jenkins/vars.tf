@@ -10,4 +10,8 @@ variable "aws_subnet_cidr_blocks" {
   default = ["10.0.0.0/24"]
 }
 
+variable "office_ip" {
+  default = "75.128.253.63/32"
+}
+
 data "aws_availability_zones" "available" {}
