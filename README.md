@@ -66,6 +66,8 @@ stage('Rolling App Deployment') {
 }
 ```
 
+![Jenkins Pipeline image](Jenkins_Pipeline.png)
+
 ## Todo
 * Store and manage AMI image IDs in a way that allows changes to be rolled back easily
 * Testing of AMI images before deployment
