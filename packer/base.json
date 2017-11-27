@@ -1,22 +1,11 @@
 {
   "variables": {
     "SOURCE_AMI": "ami-da05a4a0",
-    "INSTANCE_TYPE": "t2.micro",
-    "INSTANCE_USER": "ubuntu",
-    "VPC_ID": null,
-    "SUBNET_ID": null,
-    "REGION": "us-east-1",
     "NVM_VERSION": "v0.33.6",
     "NODE_VERSION": "8.9.1"
   },
   "builders": [{
     "type": "amazon-chroot",
-    "region": "{{ user `REGION`}}",
-#    "vpc_id": "{{user `VPC_ID`}}",
-#    "subnet_id": "{{user `SUBNET_ID`}}",
-#    "associate_public_ip_address": true,
-#    "instance_type": "{{user `INSTANCE_TYPE`}}",
-#    "ssh_username": "{{user `INSTANCE_USER`}}",
     "ami_name": "base {{timestamp}}",
     "source_ami": "{{user `SOURCE_AMI`}}"
   }],
@@ -27,7 +16,6 @@
   }, {
     "type": "shell",
     "environment_vars": [
-      "INSTANCE_USER={{user `INSTANCE_USER`}}",
       "NVM_VERSION={{user `NVM_VERSION`}}",
       "NODE_VERSION={{user `NODE_VERSION`}}"
     ],
