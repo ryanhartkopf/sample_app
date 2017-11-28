@@ -10,9 +10,9 @@ resource "aws_ebs_volume" "mongoA" {
   }
 
   # This resource is persistent and should never be deleted by Terraform
-  lifecycle {
-    prevent_destroy = true
-  }
+  #lifecycle {
+  #  prevent_destroy = true
+  #}
 }
 
 # Create persistent IP address so Packer can pull its IP from the remote state
