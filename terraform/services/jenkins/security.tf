@@ -104,15 +104,15 @@ resource "aws_security_group_rule" "graylog-allow-514-in-app" {
   description = "Graylog log traffic from app instances"
 }
 
-resource "aws_security_group_rule" "graylog-allow-514-in-data" {
+resource "aws_security_group_rule" "graylog-allow-514-in-mongodb" {
   security_group_id = "${aws_security_group.graylog.id}"
 
   type        = "ingress"
   from_port   = 514
   to_port     = 514
   protocol    = "tcp"
-  source_security_group_id = "${data.terraform_remote_state.data.security_group_id}"
-  description = "Graylog log traffic from data instances"
+  source_security_group_id = "${data.terraform_remote_state.mongodb.security_group_id}"
+  description = "Graylog log traffic from mongodb instances"
 }
 
 resource "aws_security_group_rule" "graylog-allow-9000-in" {
