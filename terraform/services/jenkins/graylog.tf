@@ -23,3 +23,18 @@ resource "aws_eip_association" "graylog" {
   instance_id   = "${aws_instance.graylog.id}"
   allocation_id = "${aws_eip.graylog.id}"
 }
+
+# Create EBS volume for log data and attach to instance
+resource "aws_ebs_volume" "graylog1" {
+  availability_zone = "${aws_instance.graylog.availability_zone}"
+  size = 10
+
+  tags {
+    Name = "graylog1"
+  }
+}
+resource "aws_volume_attachment" "graylog1" {
+  device_name = "/dev/sdf"
+  volume_id   = "${aws_ebs_volume.graylog1.id}"
+  instance_id = "${aws_instance.graylog.id}"
+}
