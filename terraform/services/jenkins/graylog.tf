@@ -9,7 +9,7 @@ resource "aws_eip" "graylog" {
 resource "aws_instance" "graylog" {
   subnet_id              = "${aws_subnet.admin.id}"
   ami                    = "${var.source_ami}"
-  instance_type          = "${var.instance_type}"
+  instance_type          = "t2.medium"
   vpc_security_group_ids = ["${aws_security_group.graylog.id}"]
   key_name               = "deployer"
 
