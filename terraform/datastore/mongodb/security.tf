@@ -52,4 +52,13 @@ resource "aws_security_group_rule" "mongodb-allow-27017-internal-out" {
   source_security_group_id = "${aws_security_group.mongodb.id}"
 }
 
+resource "aws_security_group_rule" "mongodb-allow-all-out" {
+  security_group_id = "${aws_security_group.mongodb.id}"
 
+  type        = "egress"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
+  description = "Allow all outbound access"
+}
