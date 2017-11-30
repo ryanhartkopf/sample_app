@@ -159,4 +159,5 @@ bind_ip = 0.0.0.0
 journal=true
 EOF
 
-apt-get install -y mongodb
+apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y mongodb
+
