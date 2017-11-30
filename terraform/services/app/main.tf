@@ -8,6 +8,14 @@ data "terraform_remote_state" "vpc" {
     region = "us-east-1"
   }
 }
+data "terraform_remote_state" "mongodb" {
+  backend = "s3"
+  config {
+    bucket = "terraform-state-ryanhartkopf"
+    key = "datastore/mongodb/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
 
 # The configuration for remote state will be filled in by Terragrunt
 

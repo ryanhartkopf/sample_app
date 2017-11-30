@@ -48,4 +48,12 @@ resource "aws_security_group_rule" "app-allow-8080-in" {
   source_security_group_id = "${aws_security_group.app-elb.id}"
 }
 
+resource "aws_security_group_rule" "app-allow-27017-out-mongodb" {
+  security_group_id = "${aws_security_group.app.id}"
 
+  type                     = "egress"
+  from_port                = 27017
+  to_port                  = 27017
+  protocol                 = "tcp"
+  source_security_group_id = "${data.terraform_remote_state.mongodb.security_group_id}"
+}
