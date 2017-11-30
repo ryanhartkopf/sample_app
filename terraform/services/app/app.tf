@@ -32,6 +32,7 @@ resource "aws_launch_configuration" "app" {
   image_id        = "${var.source_ami}"
   instance_type   = "${var.instance_type}"
   security_groups = ["${aws_security_group.app.id}"]
+  user_data       = "${file("user_data.sh")}"
 
   lifecycle {
     create_before_destroy = true
