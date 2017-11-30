@@ -42,11 +42,12 @@ resource "aws_elb" "mongodb" {
 # Configure Auto-Scaling Group, launch it, and attach to ELB
 
 resource "aws_launch_configuration" "mongodb" {
-  image_id             = "${var.source_ami}"
-  instance_type        = "${var.instance_type}"
-  iam_instance_profile = "AttachEBSVolume"
-  user_data            = "${file("user_data.sh")}"
-  security_groups      = ["${aws_security_group.mongodb.id}"]
+  image_id                    = "${var.source_ami}"
+  instance_type               = "${var.instance_type}"
+  iam_instance_profile        = "AttachEBSVolume"
+  user_data                   = "${file("user_data.sh")}"
+  associate_public_ip_address = true
+  security_groups             = ["${aws_security_group.mongodb.id}"]
 
   lifecycle {
     create_before_destroy = true
