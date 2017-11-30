@@ -18,7 +18,7 @@ resource "aws_ebs_volume" "mongoA" {
 # Create ELB
 
 resource "aws_elb" "mongodb" {
-  name    = "${data.terraform_remote_state.vpc.project_name}-app-elb"
+  name    = "${data.terraform_remote_state.vpc.project_name}-mongodb-elb"
   subnets = ["${aws_subnet.mongodb.*.id}"]
 
   listener {

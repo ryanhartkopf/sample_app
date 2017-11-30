@@ -50,7 +50,7 @@ resource "aws_security_group_rule" "mongodb-allow-27017-in" {
   from_port                = 27017
   to_port                  = 27017
   protocol                 = "tcp"
-  source_security_group_id = "${data.terraform_remote_state.app.security_group_id}"
+  source_security_group_id = "${aws_security_group.mongodb-elb.id}"
   description              = "Allow traffic inbound from MongoDB ELB"
 }
 
