@@ -18,8 +18,9 @@ resource "aws_ebs_volume" "mongoA" {
 # Create ELB
 
 resource "aws_elb" "mongodb" {
-  name    = "${data.terraform_remote_state.vpc.project_name}-mongodb-elb"
-  subnets = ["${aws_subnet.mongodb.*.id}"]
+  name     = "${data.terraform_remote_state.vpc.project_name}-mongodb-elb"
+  subnets  = ["${aws_subnet.mongodb.*.id}"]
+  internal = true
 
   listener {
     instance_port     = 27017
@@ -35,8 +36,6 @@ resource "aws_elb" "mongodb" {
     target              = "TCP:27017"
     interval            = 30
   }
-
-  cross_zone_load_balancing = true
 }
 
 # Configure Auto-Scaling Group, launch it, and attach to ELB
