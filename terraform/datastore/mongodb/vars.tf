@@ -11,11 +11,11 @@ variable "instance_type" {
 }
 
 variable "aws_subnet_cidr_blocks" {
-  default = ["10.0.3.0/24", "10.0.4.0/24"]
+  default = ["10.0.3.0/24"]
 }
 
 variable "mongo_static_ips" {
-  default = ["10.0.3.10", "10.0.4.10"]
+  default = ["10.0.3.10"]
 }
 
 data "aws_availability_zones" "available" {}
