@@ -7,6 +7,9 @@ The backend and routing are contained in the [server.js](server.js) file, and th
 ## Infrastructure - app layer
 The app layer infrastructure is immutable. To quote Florian Motlik from CodeShip, "Immutable infrastructure is comprised of immutable components that are replaced for every deployment, rather than being updated in-place." [(Source)](https://blog.codeship.com/immutable-infrastructure/). This allows us to avoid configuration drift, memory leaks, unpatched instances, and the dreaded reboot of an instance with 439 days of uptime at 2 in the morning. The app layer will be deployed using Terraform with a single Elastic Load Balancer and an Auto-Scaling Group of EC2 instances. The instance AMIs are built using Packer.
 
+## Infrastructure - DB layer
+The MongoDB instance is launched into an auto-scaling group. The MongoDB data itself is stored in a mutable EBS volume. This volume is attached to the MongoDB server on boot with a user data script. This allows the MongoDB server to be deleted and re-launched automatically without losing the application state.
+
 ## Build
 To build the infrastructure, clone the GitHub repo, give Terraform some credentials [(see Terraform docs)](https://www.terraform.io/docs/providers/aws/), download and install [Terragrunt](https://github.com/gruntwork-io/terragrunt/releases) for remote state management, then run:
 
@@ -88,7 +91,7 @@ If this occurs, you can fix it by wiping out the Jenkins job workspace and runni
 
 ## Todo
 * Store and manage AMI image IDs in a way that allows changes to be rolled back easily
-* Testing of AMI images before deployment
-* Immutable MongoDB instances backed by mutable EBS volumes containing application state
+* Testing of AMI images before deployment using [Goss](https://github.com/aelsabbahy/goss)
+* Immutable Mongo replset
 * Automatic cleanup of AMIs (these can get quite expensive)
 * Jenkinsfile integration for Pipeline
