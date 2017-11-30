@@ -30,6 +30,17 @@ resource "aws_security_group_rule" "jenkins-allow-22-in" {
   description = "SSH access to Jenkins instance from office"
 }
 
+resource "aws_security_group_rule" "jenkins-allow-22-in-all" {
+  security_group_id = "${aws_security_group.jenkins.id}"
+
+  type        = "ingress"
+  from_port   = 22
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  description = "SSH access to Jenkins instance from office"
+}
+
 resource "aws_security_group_rule" "jenkins-allow-8080-in" {
   security_group_id = "${aws_security_group.jenkins.id}"
 
