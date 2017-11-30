@@ -20,7 +20,7 @@ resource "aws_ebs_volume" "mongoA" {
 resource "aws_elb" "mongodb" {
   name            = "${data.terraform_remote_state.vpc.project_name}-mongodb-elb"
   subnets         = ["${aws_subnet.mongodb.*.id}"]
-  security_groups = ["${aws_security_group.app-elb.id]"]
+  security_groups = ["${aws_security_group.app-elb.id}"]
   internal        = true
 
   listener {
