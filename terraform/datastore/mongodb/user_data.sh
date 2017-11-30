@@ -2,7 +2,7 @@
 
 apt-get update
 unattended-upgrades
-apt-get install python-pip
+apt-get install -y python-pip
 pip install boto3 argparse
 
 cat << EOF > attach_volume.py
