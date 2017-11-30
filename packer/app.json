@@ -7,8 +7,7 @@
   "builders": [{
     "type": "amazon-chroot",
     "ami_name": "sample-app {{timestamp}}",
-    "source_ami": "{{user `SOURCE_AMI`}}",
-    "copy_files": []
+    "source_ami": "{{user `SOURCE_AMI`}}"
   }],
   "provisioners": [{
     "type": "file",
