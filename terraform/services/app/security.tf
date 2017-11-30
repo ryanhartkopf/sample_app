@@ -67,5 +67,5 @@ resource "aws_security_group_rule" "app-allow-27017-out" {
   from_port                = 27017
   to_port                  = 27017
   protocol                 = "tcp"
-  source_security_group_id = "${data.terraform_remote_state.mongodb-elb.security_group_id}"
+  source_security_group_id = "${data.terraform_remote_state.mongodb.security_group_id}"
 }
