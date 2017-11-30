@@ -1,5 +1,3 @@
-# Define subnets for mongodb
-
 resource "aws_subnet" "mongodb" {
   vpc_id            = "${data.terraform_remote_state.vpc.vpc_id}"
   cidr_block        = "${var.aws_subnet_cidr_blocks[count.index]}"
@@ -11,17 +9,41 @@ resource "aws_subnet" "mongodb" {
   }
 }
 
-# Create security group for data instances
+resource "aws_security_group" "mongodb-elb" {
+  vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
+  name        = "${data.terraform_remote_state.vpc.project_name}-mongodb-elb"
+  description = "Security group for ${data.terraform_remote_state.vpc.project_name} mongodb Elastic Load Balancer"
+}
+
+resource "aws_security_group_rule" "mongodb-elb-allow-27017-in" {
+  security_group_id = "${aws_security_group.mongodb-elb.id}"
+
+  type                     = "ingress"
+  from_port                = 27017
+  to_port                  = 27017
+  protocol                 = "tcp"
+  source_security_group_id = "${data.terraform_remote_state.app.security_group_id}"
+  description              = "Allow traffic inbound from app instances"
+}
+
+resource "aws_security_group_rule" "mongodb-elb-allow-27017-out" {
+  security_group_id = "${aws_security_group.mongodb-elb.id}"
+
+  type                     = "egress"
+  from_port                = 27017
+  to_port                  = 27017
+  protocol                 = "tcp"
+  source_security_group_id = "${aws_security_group.mongodb.id}"
+  description              = "Allow traffic outbound to MongoDB instances"
+}
 
 resource "aws_security_group" "mongodb" {
   name        = "${data.terraform_remote_state.vpc.project_name}-mongodb"
-  description = "Firewall rules for ${data.terraform_remote_state.vpc.project_name} mongodb instances"
+  description = "Security group for ${data.terraform_remote_state.vpc.project_name} MongoDB instances"
   vpc_id      = "${data.terraform_remote_state.vpc.vpc_id}"
 }
 
-# Allow web traffic to mongodb instances from app
-
-resource "aws_security_group_rule" "mongodb-allow-27017-in-app" {
+resource "aws_security_group_rule" "mongodb-allow-27017-in" {
   security_group_id = "${aws_security_group.mongodb.id}"
 
   type                     = "ingress"
@@ -29,9 +51,8 @@ resource "aws_security_group_rule" "mongodb-allow-27017-in-app" {
   to_port                  = 27017
   protocol                 = "tcp"
   source_security_group_id = "${data.terraform_remote_state.app.security_group_id}"
+  description              = "Allow traffic inbound from MongoDB ELB"
 }
-
-# Allow web traffic between mongodb instances within security group
 
 resource "aws_security_group_rule" "mongodb-allow-27017-internal" {
   security_group_id = "${aws_security_group.mongodb.id}"
@@ -41,6 +62,7 @@ resource "aws_security_group_rule" "mongodb-allow-27017-internal" {
   to_port                  = 27017
   protocol                 = "tcp"
   source_security_group_id = "${aws_security_group.mongodb.id}"
+  description              = "Allow traffic between MongoDB instances"
 }
 resource "aws_security_group_rule" "mongodb-allow-27017-internal-out" {
   security_group_id = "${aws_security_group.mongodb.id}"
@@ -50,6 +72,7 @@ resource "aws_security_group_rule" "mongodb-allow-27017-internal-out" {
   to_port                  = 27017
   protocol                 = "tcp"
   source_security_group_id = "${aws_security_group.mongodb.id}"
+  description              = "Allow traffic between MongoDB instances"
 }
 
 resource "aws_security_group_rule" "mongodb-allow-all-out" {
