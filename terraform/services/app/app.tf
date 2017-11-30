@@ -24,6 +24,9 @@ resource "aws_elb" "app" {
 }
 
 # Configure Auto-Scaling Group, launch it, and attach to ELB
+# This could be converted to rolling deployments with a CloudFormation object. See:
+# https://github.com/hashicorp/terraform/issues/1552#issuecomment-191847434
+# https://github.com/travis-infrastructure/terraform-config/blob/b7584146cfd2b4978def7a87c5f034994cc94766/modules/aws_asg/main.tf#L134-L221
 
 resource "aws_launch_configuration" "app" {
   image_id        = "${var.source_ami}"
