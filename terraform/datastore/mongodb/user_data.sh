@@ -3,6 +3,7 @@
 apt-get update
 unattended-upgrades
 apt-get install -y python-pip
+pip install --upgrade pip
 pip install boto3 argparse
 
 cat << EOF > attach_volume.py
@@ -142,3 +143,20 @@ EOF
 
 chmod +x attach_volume.py
 ./attach_volume.py --value mongoA --attach_as /dev/xvdf --wait
+
+mkdir /var/lib/mongodb
+mount /dev/xvdf1 /var/lib/mongodb
+
+cat << EOF >> /etc/fstab
+/dev/xvdf1 /var/lib/mongodb ext4 defaults 0 0
+EOF
+
+cat << EOF > /etc/mongodb.conf
+dbpath=/var/lib/mongodb
+logpath=/var/log/mongodb/mongodb.log
+logappend=true
+bind_ip = 0.0.0.0
+journal=true
+EOF
+
+apt-get install -y mongodb
