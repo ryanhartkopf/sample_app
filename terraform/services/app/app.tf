@@ -1,8 +1,9 @@
 # Create ELB
 
 resource "aws_elb" "app" {
-  name    = "${data.terraform_remote_state.vpc.project_name}-app-elb"
-  subnets = ["${aws_subnet.app.*.id}"]
+  name            = "${data.terraform_remote_state.vpc.project_name}-app-elb"
+  subnets         = ["${aws_subnet.app.*.id}"]
+  security_groups = ["${aws_security_group.app-elb.id]"]
 
   listener {
     instance_port     = 8080
