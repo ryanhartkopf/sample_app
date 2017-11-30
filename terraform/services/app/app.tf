@@ -60,5 +60,6 @@ resource "aws_autoscaling_group" "app" {
 
 resource "aws_autoscaling_attachment" "app" {
   autoscaling_group_name = "${aws_autoscaling_group.app.id}"
-  elb                    = "${aws_elb.app.id}"}
+  elb                    = "${aws_elb.app.id}"
+}
 

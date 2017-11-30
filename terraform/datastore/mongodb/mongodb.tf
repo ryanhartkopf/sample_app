@@ -10,20 +10,36 @@ resource "aws_ebs_volume" "mongoA" {
   }
 
   # This resource is persistent and should never be deleted by Terraform
-  #lifecycle {
-  #  prevent_destroy = true
-  #}
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
-# Create persistent IP address so Packer can pull its IP from the remote state
+# Create ELB
 
-resource "aws_network_interface" "mongoA" {
-  subnet_id       = "${element("${aws_subnet.mongodb.*.id}", count.index)}"
-  private_ips     = ["${var.mongo_static_ips[count.index]}"]
-  security_groups = ["${aws_security_group.mongodb.id}"]
+resource "aws_elb" "mongodb" {
+  name    = "${data.terraform_remote_state.vpc.project_name}-app-elb"
+  subnets = ["${aws_subnet.mongodb.*.id}"]
+
+  listener {
+    instance_port     = 27017
+    instance_protocol = "tcp"
+    lb_port           = 27017
+    lb_protocol       = "tcp"
+  }
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    target              = "TCP:27017"
+    interval            = 30
+  }
+
+  cross_zone_load_balancing = true
 }
 
-# Configure Auto-Scaling Group and launch it
+# Configure Auto-Scaling Group, launch it, and attach to ELB
 
 resource "aws_launch_configuration" "mongodb" {
   image_id             = "${var.source_ami}"
@@ -46,7 +62,8 @@ resource "aws_autoscaling_group" "mongodb" {
   max_size                  = 1
   min_size                  = 1
   desired_capacity          = 1
-  health_check_type         = "EC2"
+  wait_for_elb_capacity     = 1
+  health_check_type         = "ELB"
   launch_configuration      = "${aws_launch_configuration.mongodb.name}"
 
   lifecycle {
@@ -60,3 +77,7 @@ resource "aws_autoscaling_group" "mongodb" {
   }
 }
 
+resource "aws_autoscaling_attachment" "mongodb" {
+  autoscaling_group_name = "${aws_autoscaling_group.mongodb.id}"
+  elb                    = "${aws_elb.mongodb.id}"
+}

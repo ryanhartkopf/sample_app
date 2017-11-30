@@ -1,5 +1,5 @@
-output "mongo_static_ip" {
-  value = "${var.mongo_static_ips[0]}"
+output "mongo_dns" {
+  value = "${aws_elb.mongodb.dns_name}"
 }
 
 output "security_group_id" {
